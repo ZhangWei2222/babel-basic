@@ -1,0 +1,29 @@
+{
+  "name": "babel-basic",
+  "version": "1.0.0",
+  "description": "babel",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src -d lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZhangWei2222/babel-basic.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZhangWei2222/babel-basic/issues"
+  },
+  "homepage": "https://github.com/ZhangWei2222/babel-basic#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.15.4",
+    "@babel/core": "^7.15.5",
+    "@babel/plugin-transform-arrow-functions": "^7.14.5",
+    "@babel/preset-env": "^7.15.4"
+  },
+  "dependencies": {
+    "core-js": "^3.17.2"
+  }
+}
