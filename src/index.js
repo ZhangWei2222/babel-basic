@@ -11,3 +11,8 @@ Promise.resolve().finally();
 console.log(fn());
 console.log(num);
 console.log(hasTwo);
+
+
+class Foo {
+    method() { }
+}

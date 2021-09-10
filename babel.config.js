@@ -10,8 +10,11 @@ const presets = [
             },
             useBuiltIns: "usage",
             corejs: 3
-        }
+        },
+        "stage-0"
     ]
 ]
 
-module.exports = { presets };
+const plugins = ["@babel/plugin-transform-runtime"]
+
+module.exports = { presets, plugins };
