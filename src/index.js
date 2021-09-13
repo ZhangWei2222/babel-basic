@@ -4,72 +4,51 @@ import * as t from "babel-types";
 import generate from "@babel/generator";
 import template from "@babel/template";
 
-// const buildRequire = template(`
-//   var IMPORT_NAME = require(SOURCE);
-// `);
-const name = "my-module";
-const mod = "myModule";
 
-const ast = template.ast`
-  var ${mod} = require("${name}");
-`;
-
-// const ast = buildRequire({
-//   IMPORT_NAME: t.identifier("myModule"),
-//   SOURCE: t.stringLiteral("my-module"),
-// });
-
-console.log(generate(ast).code);
-
-// const ast1 = template.ast(`
-//   var myModule = require("my-module");
-// `);
-// console.log(ast1, ast);
-
-// const code = `function square(n) {
-//   return n * n;
-// }`;
+const code = `import {A, B, C as D} from 'foo'`;
 
 
-// const ast = babelParser.parse(code);
+const ast = babelParser.parse(code, {
+    sourceType: 'module'
+});
 
+const MODULE = 'foo'
+traverse(ast, {
+    ImportDeclaration(path) {
+        if (path.node.source.value !== MODULE) {
+            return
+        }
 
-// // traverse(ast, {
-// //   enter(path) {
-// //     if (path.isIdentifier({ name: "n" })) {
-// //       path.node.name = "x";
-// //     }
-// //   }
-// // });
+        // 如果是空导入则直接删除掉
+        const specs = path.node.specifiers
+        if (specs.length === 0) {
+            path.remove()
+            return
+        }
 
-// traverse(ast, {
-//   enter(path) {
-//     if (t.isIdentifier(path.node, { name: "n" })) {
-//       path.node.name = "x";
-//     }
-//   }
-// });
+        // 判断是否包含了默认导入和命名空间导入
+        if (specs.some(i => t.isImportDefaultSpecifier(i) || t.isImportNamespaceSpecifier(i))) {
+            // 抛出错误，Babel会展示出错的代码帧
+            throw path.buildCodeFrameError("不能使用默认导入或命名空间导入")
+        }
 
-// const result = generate(ast, {}, code);
-// console.log(result)
+        // 转换命名导入
+        const imports = []
+        for (const spec of specs) {
+            const named = MODULE + '/' + spec.imported.name
+            const local = spec.local
+            console.log('--1--', t.importDeclaration([t.importDefaultSpecifier(local)], t.stringLiteral(named)))
+            imports.push(t.importDeclaration([t.importDefaultSpecifier(local)], t.stringLiteral(named)))
+            console.log('--2--', t.importDeclaration([], t.stringLiteral(`${named}/style.css`)))
+            imports.push(t.importDeclaration([], t.stringLiteral(`${named}/style.css`)))
+        }
+        console.log('imports', imports)
+        // 替换原有的导入语句
+        path.replaceWithMultiple(imports)
+    }
+});
 
-// // const code1 = `import { Ajax } from '../lib/utils';
-// // import utils from '../lib/utils';
-// // import * as utils1 from '../lib/utils';`
+console.log('sdad', ast)
 
-// // const ast1 = babelParser.parse(code1, { sourceType: "module" });
-// // traverse(ast1, {
-// //   ImportDeclaration(path, state) {
-// //     const specifiers = path.node.specifiers;
-// //     console.log('==', specifiers)
-
-// //     specifiers.forEach((specifier) => {
-// //       if (!t.isImportDefaultSpecifier(specifier) && !t.isImportNamespaceSpecifier(specifier)) {
-// //         console.log('do something')
-// //       }
-// //     })
-// //   }
-// // });
-
-
-
+const result = generate(ast, {}, code);
+console.log(result)
