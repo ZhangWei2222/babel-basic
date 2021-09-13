@@ -1,18 +1,75 @@
-const fn = () => 1; // ES6箭头函数, 返回值为1
-let num = 3 ** 2; // ES7求幂运算符
-let hasTwo = [1, 2, 3].includes(2)
-let foo = function (a, b, c,) { // ES7参数支持尾部逗号
-    console.log('a:', a)
-    console.log('b:', b)
-    console.log('c:', c)
-}
-foo(1, 3, 4)
-Promise.resolve().finally();
-console.log(fn());
-console.log(num);
-console.log(hasTwo);
+import * as babelParser from "@babel/parser";
+import traverse from "@babel/traverse";
+import * as t from "babel-types";
+import generate from "@babel/generator";
+import template from "@babel/template";
+
+// const buildRequire = template(`
+//   var IMPORT_NAME = require(SOURCE);
+// `);
+const name = "my-module";
+const mod = "myModule";
+
+const ast = template.ast`
+  var ${mod} = require("${name}");
+`;
+
+// const ast = buildRequire({
+//   IMPORT_NAME: t.identifier("myModule"),
+//   SOURCE: t.stringLiteral("my-module"),
+// });
+
+console.log(generate(ast).code);
+
+// const ast1 = template.ast(`
+//   var myModule = require("my-module");
+// `);
+// console.log(ast1, ast);
+
+// const code = `function square(n) {
+//   return n * n;
+// }`;
 
 
-class Foo {
-    method() { }
-}
+// const ast = babelParser.parse(code);
+
+
+// // traverse(ast, {
+// //   enter(path) {
+// //     if (path.isIdentifier({ name: "n" })) {
+// //       path.node.name = "x";
+// //     }
+// //   }
+// // });
+
+// traverse(ast, {
+//   enter(path) {
+//     if (t.isIdentifier(path.node, { name: "n" })) {
+//       path.node.name = "x";
+//     }
+//   }
+// });
+
+// const result = generate(ast, {}, code);
+// console.log(result)
+
+// // const code1 = `import { Ajax } from '../lib/utils';
+// // import utils from '../lib/utils';
+// // import * as utils1 from '../lib/utils';`
+
+// // const ast1 = babelParser.parse(code1, { sourceType: "module" });
+// // traverse(ast1, {
+// //   ImportDeclaration(path, state) {
+// //     const specifiers = path.node.specifiers;
+// //     console.log('==', specifiers)
+
+// //     specifiers.forEach((specifier) => {
+// //       if (!t.isImportDefaultSpecifier(specifier) && !t.isImportNamespaceSpecifier(specifier)) {
+// //         console.log('do something')
+// //       }
+// //     })
+// //   }
+// // });
+
+
+
